@@ -2,23 +2,41 @@ using UnityEngine;
 
 public class TableInteract : MonoBehaviour
 {
-    public GameObject outlineObj;
+    public SpriteRenderer sr;
+    private Material mat;
+
     public TextAsset dialogText;
     public GameObject TipsE;
+    public bool isopen = false;
     private bool canInteract = false;
+    private bool iffirst = true;
 
     private void Start()
     {
-
-        outlineObj.SetActive(false);
+        mat = sr.material;
 
     }
 
     private void Update()
     {
-        if (canInteract && DialogSystem.Instance.ifReading == false && Input.GetKeyDown(KeyCode.F))
+        if (canInteract && DialogSystem.Instance.ifReading == false && Input.GetKeyDown(KeyCode.F) && isopen == false && PlayerState.Instance.currentps == PlayerState.ps.Movable)
         {
-            DialogSystem.Instance.say(dialogText);
+            PlayerState.Instance.currentps = PlayerState.ps.ReadingPanel;
+            CluesSystem.Instance.OpenClue("Buttons");
+
+            isopen = true;
+        }
+        else if (canInteract && DialogSystem.Instance.ifReading == false && Input.GetKeyDown(KeyCode.F) && isopen == true)
+        {
+            PlayerState.Instance.currentps = PlayerState.ps.Movable;
+            isopen = false;
+            UIManager.Instance.ClosePanel(UIConst.CluePanel);
+            if (iffirst == true)
+            {
+                DialogSystem.Instance.sayDirect("我", "或许我该推测一下这些词的意思，左键单击蓝色字体以加入词条笔记，可以用tab打开并编辑揣测的意思");
+                ItemsSystem.Instance.ownitems.Add("Buttons");
+            }
+            iffirst = false;
         }
     }
 
@@ -28,11 +46,7 @@ public class TableInteract : MonoBehaviour
         {
             canInteract = true;
 
-            if (outlineObj != null)
-            {
-                TipsE.SetActive(true);
-                outlineObj.SetActive(true);
-            }
+            mat.SetFloat("_OutlineThickness", 0.004f);
         }
     }
 
@@ -42,11 +56,7 @@ public class TableInteract : MonoBehaviour
         {
             canInteract = false;
 
-            if (outlineObj != null)
-            {
-                TipsE.SetActive(false);
-                outlineObj.SetActive(false);
-            }
+            mat.SetFloat("_OutlineThickness", 0f);
         }
     }
 }

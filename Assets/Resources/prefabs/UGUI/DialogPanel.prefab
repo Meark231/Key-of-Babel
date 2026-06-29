@@ -492,3 +492,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8d469ab1dc238b43addd27252915ebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  guessUIPrefab: {fileID: 3478936015261084007, guid: 5aba200ed8ae22645aba973e449d10e5,
+    type: 3}
+  tooltipOffset: {x: 0, y: 60}

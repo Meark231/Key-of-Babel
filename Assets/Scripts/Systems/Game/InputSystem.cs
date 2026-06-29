@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InputCommandSystem : Singleton<InputCommandSystem>
 {
     public List<WordType> currentWords = new List<WordType>();
-
+    public int currentLevel = 1;
     public int maxCommandLength = 4;
     public string content = "";
     public List<string> lines = new List<string>();
@@ -56,6 +57,12 @@ public class InputCommandSystem : Singleton<InputCommandSystem>
 
     private void ExecuteCommand()
     {
+        if (ProcessSystem.Instance.ifGetLowCard == false && currentLevel == 1 || ProcessSystem.Instance.ifGetMidCard == false && currentLevel == 2 || ProcessSystem.Instance.ifGetHighCard == false && currentLevel == 3)
+        {
+            lines.Add("权限卡缺失");
+            ClearCommand();
+            return;
+        }
         if (currentWords.Count == 4)
         {
             lines.Add("无效指令");
@@ -64,6 +71,12 @@ public class InputCommandSystem : Singleton<InputCommandSystem>
         }
         if (currentWords.Count <= 2)
         {
+            if (currentWords.Count == 0 || currentWords.Count == 1)
+            {
+                lines.Add("无效指令");
+                ClearCommand();
+                return;
+            }
             if ((currentWords[0] == WordType.Open || currentWords[0] == WordType.Close) && (currentWords[1] == WordType.Light || currentWords[1] == WordType.Power || currentWords[1] == WordType.Door))
             {
                 lines.Add("无指定范围的权限");
@@ -82,52 +95,53 @@ public class InputCommandSystem : Singleton<InputCommandSystem>
 
 
 
-        if (action == WordType.Open && target == WordType.Light)
+        if ((action == WordType.Open || action == WordType.Close || action == WordType.Up || action == WordType.Down) &&
+        (target == WordType.Light || target == WordType.Door || target == WordType.Oxygen || target == WordType.Temperature || target == WordType.Power))
         {
+            string s = NoteSystem.Instance.WordToDisplayName(action) + NoteSystem.Instance.WordToDisplayName(range) + NoteSystem.Instance.WordToDisplayName(target);
 
-            OpenLocalLight();
-            if (ProcessSystem.Instance.IfPowerful == true) lines.Add("执行成功");
-            else lines.Add("电力不足");
-        }
-        else if (action == WordType.Close && target == WordType.Light)
-        {
+            if (action == WordType.Open && target == WordType.Power)
+            {
+                EventCenter.Instance.EventTrigger(s); lines.Add("执行成功");
+                Debug.Log(s);
+            }
+            else
+                switch (range)
+                {
+                    case WordType.Dormi:
 
-            CloseLocalLight();
-            lines.Add("执行成功");
-        }
-        else if (action == WordType.Open && target == WordType.Power)
-        {
+                        if (ProcessSystem.Instance.SuSheP == true) { EventCenter.Instance.EventTrigger(s); lines.Add("执行成功"); }
+                        else { lines.Add("电力不足"); }
+                        break;
+                    case WordType.Life:
+                        if (ProcessSystem.Instance.WeiShengP == true) { EventCenter.Instance.EventTrigger(s); lines.Add("执行成功"); }
+                        else { lines.Add("电力不足"); }
+                        break;
+                    case WordType.Office:
+                        if (ProcessSystem.Instance.BanGongP == true) { EventCenter.Instance.EventTrigger(s); lines.Add("执行成功"); }
+                        else { lines.Add("电力不足"); }
+                        break;
+                    case WordType.Electric:
+                        if (ProcessSystem.Instance.DianLiP == true) { EventCenter.Instance.EventTrigger(s); lines.Add("执行成功"); }
+                        else { lines.Add("电力不足"); }
+                        break;
+                    case WordType.Research:
+                        if (ProcessSystem.Instance.YanJiuP == true) { EventCenter.Instance.EventTrigger(s); lines.Add("执行成功"); }
+                        else { lines.Add("电力不足"); }
+                        break;
+                    case WordType.Coordi:
+                        if (ProcessSystem.Instance.XinBiaoP == true) { EventCenter.Instance.EventTrigger(s); lines.Add("执行成功"); }
+                        else { lines.Add("电力不足"); }
+                        break;
+                }
 
-            OpenLocalPower();
-            lines.Add("执行成功");
         }
-        else if (action == WordType.Close && target == WordType.Power)
-        {
 
-            CloseLocalPower();
-            lines.Add("执行成功");
-        }
-        else if (action == WordType.Open && target == WordType.Door)
-        {
-
-            OpenLocalDoor();
-            if (ProcessSystem.Instance.IfPowerful == true) lines.Add("执行成功");
-            else lines.Add("电力不足");
-        }
-        else if (action == WordType.Close && target == WordType.Door)
-        {
-
-            CloseLocalDoor();
-            lines.Add("执行成功");
-        }
         else
         {
 
             lines.Add("无效指令");
         }
-
-
-
 
 
         ClearCommand();
@@ -144,63 +158,13 @@ public class InputCommandSystem : Singleton<InputCommandSystem>
 
         foreach (WordType word in currentWords)
         {
-            result += WordToChinese(word) + " ";
+            result += NoteSystem.Instance.WordToDisplayName(word) + " ";
         }
 
         Debug.Log(result);
         return result;
     }
 
-    private string WordToChinese(WordType word)
-    {
-        switch (word)
-        {
-            case WordType.Open: return "Kai";
-            case WordType.Close: return "Guan";
-            case WordType.Local: return "BenDi";
-            case WordType.Power: return "Dian";
-            case WordType.Light: return "Deng";
-            case WordType.Door: return "Men";
-            case WordType.Enter: return "ShuRu";
-            default: return "错误";
-        }
-    }
 
-    private void OpenLocalLight()
-    {
 
-        Debug.Log("执行：开 本地 灯");
-
-        EventCenter.Instance.EventTrigger("OpenLocalLight");
-    }
-
-    private void CloseLocalLight()
-    {
-        Debug.Log("执行：关 本地 灯");
-        EventCenter.Instance.EventTrigger("CloseLocalLight");
-    }
-
-    private void OpenLocalPower()
-    {
-        Debug.Log("执行：开 本地 供电");
-        EventCenter.Instance.EventTrigger("OpenLocalPower");
-    }
-
-    private void CloseLocalPower()
-    {
-        Debug.Log("执行：关 本地 供电");
-        EventCenter.Instance.EventTrigger("CloseLocalPower");
-    }
-
-    private void OpenLocalDoor()
-    {
-        Debug.Log("执行：开 本地 门");
-        EventCenter.Instance.EventTrigger("OpenLocalDoor");
-    }
-
-    private void CloseLocalDoor()
-    {
-        Debug.Log("执行：关 本地 门");
-        EventCenter.Instance.EventTrigger("CloseLocalDoor");
-    }
 }

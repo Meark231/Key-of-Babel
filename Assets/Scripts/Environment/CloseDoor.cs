@@ -4,7 +4,7 @@ using UnityEngine;
 public class CloseDoor : MonoBehaviour
 {
     public GameObject outlineObj;
-    public TextAsset dialogText;
+
     public Sprite closeDoorSprite;
     private bool canInteract = false;
     private bool isOpen = false;
@@ -12,12 +12,14 @@ public class CloseDoor : MonoBehaviour
     private BoxCollider doorCollider;
     public GameObject opendoor;
     public Transform cameraTransform;
+    public string kaievent;
+    public string guanevent;
     private void Start()
     {
 
         outlineObj.SetActive(false);
-        EventCenter.Instance.AddEventListener("OpenLocalDoor", OpenDoor);
-        EventCenter.Instance.AddEventListener("CloseLocalDoor", CloseDoorw);
+        EventCenter.Instance.AddEventListener(kaievent, OpenDoor);
+        EventCenter.Instance.AddEventListener(guanevent, CloseDoorw);
         sr = GetComponent<SpriteRenderer>();
         doorCollider = GetComponent<BoxCollider>();
     }
@@ -57,7 +59,8 @@ public class CloseDoor : MonoBehaviour
     }
     private void OpenDoor()
     {
-        if (isOpen || ProcessSystem.Instance.IfPowerful == false) return;
+        AudioSystem.Instance.PlayDoor();
+        if (isOpen) return;
         cameraTransform.DOKill();
 
         cameraTransform.DOShakePosition(
@@ -75,7 +78,7 @@ public class CloseDoor : MonoBehaviour
     }
     private void CloseDoorw()
     {
-        if (isOpen == false || ProcessSystem.Instance.IfPowerful == false) return;
+        if (isOpen == false) return;
         cameraTransform.DOKill();
 
         cameraTransform.DOShakePosition(

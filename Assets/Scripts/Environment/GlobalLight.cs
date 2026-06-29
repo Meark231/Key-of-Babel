@@ -8,15 +8,17 @@ public class GlobalLight : MonoBehaviour
 {
     private Light globalLight;
 
+    public string LightEventName;
     public void Start()
     {
         globalLight = GetComponent<Light>();
-        EventCenter.Instance.AddEventListener("OpenLocalLight", LightOn);
+        EventCenter.Instance.AddEventListener(LightEventName, LightOn);
+        globalLight.intensity = 0f;
     }
 
     public void LightOn()
     {
-        if (ProcessSystem.Instance.IfPowerful) globalLight.intensity = 40f;
+        globalLight.intensity = 30f;
     }
 
 }

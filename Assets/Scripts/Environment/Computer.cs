@@ -1,21 +1,23 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
+
 using UnityEngine;
 
 public class Computer : Singleton<Computer>
 {
-    public GameObject outlineObj;
+    public SpriteRenderer sr;
+    private Material mat;
     public TextAsset dialogText;
     public bool isopen = false;
     private bool canInteract = false;
     private bool isfirst = true;
     public GameObject TipsE;
+    private float normalThickness = 0f;
+    private float activeThickness = 0.025f;
     private void Start()
     {
-
-        outlineObj.SetActive(false);
+        mat = sr.material;
 
     }
 
@@ -25,18 +27,21 @@ public class Computer : Singleton<Computer>
         {
             if (isopen == true)
             {
+                PlayerState.Instance.currentps=PlayerState.ps.Movable;
                 CameraFocusMove.Instance.BackToNormal();
                 UIManager.Instance.ClosePanel(UIConst.Button1Panel);
                 isopen = false;
 
             }
-            else if (isopen == false)
+            else if (isopen == false && PlayerState.Instance.currentps == PlayerState.ps.Movable)
             {
+                PlayerState.Instance.currentps =PlayerState.ps.ReadingPanel;
                 CameraFocusMove.Instance.FocusToPlayer();
                 InputCommandSystem.Instance.lines = new List<string>
                 {
                     " "
                 };
+                InputCommandSystem.Instance.currentLevel = 1;
                 InputCommandSystem.Instance.currentWords = new List<WordType>();
                 InputCommandSystem.Instance.currentInputLine = " ";
                 UIManager.Instance.OpenPanel(UIConst.Button1Panel);
@@ -54,11 +59,7 @@ public class Computer : Singleton<Computer>
         {
             canInteract = true;
 
-            if (outlineObj != null)
-            {
-                TipsE.SetActive(true);
-                outlineObj.SetActive(true);
-            }
+            mat.SetFloat("_OutlineThickness", activeThickness);
         }
     }
 
@@ -68,11 +69,7 @@ public class Computer : Singleton<Computer>
         {
             canInteract = false;
 
-            if (outlineObj != null)
-            {
-                TipsE.SetActive(false);
-                outlineObj.SetActive(false);
-            }
+            mat.SetFloat("_OutlineThickness", normalThickness);
         }
     }
 }

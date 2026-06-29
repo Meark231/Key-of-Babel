@@ -1,3 +1,5 @@
+//对于单独的一个词条ui的管理器
+
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -7,7 +9,7 @@ using Unity.VisualScripting;
 public class NoteWordItem : MonoBehaviour
 {
     private WordType wordType;
-    private bool IsGive = false;
+    public bool IsGive = false;
     public TMP_Text wordText;
     public TMP_Text guessText;
     public Button button;
@@ -18,11 +20,9 @@ public class NoteWordItem : MonoBehaviour
     {
         wordType = wwordType;
         IsGive = true;
-
-
         Refresh();
     }
-
+   
     public void Refresh()
     {
         if (IsGive) wordText.text = NoteSystem.Instance.WordToDisplayName(wordType);
@@ -31,7 +31,7 @@ public class NoteWordItem : MonoBehaviour
 
 
 
-        if (string.IsNullOrEmpty(NoteSystem.Instance.guesses[wordType]))
+        if (!IsGive || string.IsNullOrEmpty(NoteSystem.Instance.guesses[wordType]))
         {
             guessText.text = "未猜测";
         }

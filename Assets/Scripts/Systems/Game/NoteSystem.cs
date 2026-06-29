@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class NoteSystem : Singleton<NoteSystem>
 {
@@ -21,13 +22,15 @@ public class NoteSystem : Singleton<NoteSystem>
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab) && isopen == false)
+        if (Input.GetKeyDown(KeyCode.Tab) && isopen == false && PlayerState.Instance.currentps == PlayerState.ps.Movable)
         {
+            PlayerState.Instance.currentps = PlayerState.ps.ReadingNote;
             UIManager.Instance.OpenPanel(UIConst.NotePanel);
             isopen = true;
         }
         else if (Input.GetKeyDown(KeyCode.Tab) && isopen == true)
         {
+            PlayerState.Instance.currentps=PlayerState.ps.Movable;
             UIManager.Instance.ClosePanel(UIConst.NotePanel);
             isopen = false;
         }
@@ -36,35 +39,50 @@ public class NoteSystem : Singleton<NoteSystem>
     {
         confirmedMeanings[WordType.Open] = "开";
         confirmedMeanings[WordType.Close] = "关";
-        confirmedMeanings[WordType.Local] = "本地";
+        confirmedMeanings[WordType.Dormi] = "本地";
         confirmedMeanings[WordType.Power] = "供电";
         confirmedMeanings[WordType.Light] = "灯";
         confirmedMeanings[WordType.Door] = "门";
         confirmedMeanings[WordType.Enter] = "输入";
+        confirmedMeanings[WordType.Oxygen] = "供氧系统";
+        confirmedMeanings[WordType.Temperature] = "温度系统";
+        confirmedMeanings[WordType.Up] = "升高";
+        confirmedMeanings[WordType.Down] = "降低";
+        confirmedMeanings[WordType.Dormi] = "宿舍区";
+        confirmedMeanings[WordType.Life] = "维生舱";
+        confirmedMeanings[WordType.Office] = "办公区";
+        confirmedMeanings[WordType.Electric] = "电力区";
+        confirmedMeanings[WordType.Research] = "研究舱";
+        confirmedMeanings[WordType.Coordi] = "信标舱";
     }
     private void InitGuesses()
     {
         guesses[WordType.Open] = "未猜测";
         guesses[WordType.Close] = "未猜测";
-        guesses[WordType.Local] = "未猜测";
+        guesses[WordType.Dormi] = "未猜测";
         guesses[WordType.Power] = "未猜测";
         guesses[WordType.Light] = "未猜测";
         guesses[WordType.Door] = "未猜测";
         guesses[WordType.Enter] = "未猜测";
+        guesses[WordType.Oxygen] = "未猜测";
+        guesses[WordType.Temperature] = "未猜测";
+        guesses[WordType.Up] = "未猜测";
+        guesses[WordType.Down] = "未猜测";
+        guesses[WordType.Dormi] = "未猜测";
+        guesses[WordType.Life] = "未猜测";
+        guesses[WordType.Office] = "未猜测";
+        guesses[WordType.Electric] = "未猜测";
+        guesses[WordType.Research] = "未猜测";
+        guesses[WordType.Coordi] = "未猜测";
     }
     public void CollectWord(WordType word)
     {
         if (collectedWords.Contains(word))
         {
-            Debug.Log("已经收录过：" + WordToDisplayName(word));
+
             return;
         }
-
         collectedWords.Add(word);
-
-        Debug.Log("收录新词：" + WordToDisplayName(word));
-
-
     }
 
     public void CollectWordById(string linkId)
@@ -72,11 +90,6 @@ public class NoteSystem : Singleton<NoteSystem>
         if (System.Enum.TryParse(linkId, out WordType word))
         {
             CollectWord(word);
-            Debug.Log("succeSs!");
-        }
-        else
-        {
-            Debug.LogWarning("无法识别的词 ID：" + linkId);
         }
     }
 
@@ -134,11 +147,20 @@ public class NoteSystem : Singleton<NoteSystem>
         {
             case WordType.Open: return "Kai";
             case WordType.Close: return "Guan";
-            case WordType.Local: return "BenDi";
+            case WordType.Dormi: return "SuShe";
             case WordType.Power: return "Dian";
             case WordType.Light: return "Deng";
             case WordType.Door: return "Men";
             case WordType.Enter: return "ShuRu";
+            case WordType.Oxygen: return "Yang";
+            case WordType.Temperature: return "WenDu";
+            case WordType.Up: return "Gao";
+            case WordType.Down: return "Di";
+            case WordType.Life: return "WeiSheng";
+            case WordType.Office: return "BanGong";
+            case WordType.Electric: return "DianLi";
+            case WordType.Research: return "Yanjiu";
+            case WordType.Coordi: return "XinBiao";
             default: return "未知";
         }
     }

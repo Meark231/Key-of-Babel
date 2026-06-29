@@ -1,0 +1,5 @@
+A: 我们<link="SuShe"><color=#66ccff>SuShe</color></link>的小控制台可以控制我们的<link="Local"><color=#66ccff>BenDi</color></link>区域的一些系统，像是<link="Open"><color=#66ccff>Kai</color></link>和<link="Close"><color=#66ccff>Guan</color></link> <link="Door"><color=#66ccff>Men</color></link>啦，还有<link="Open"><color=#66ccff>Kai</color></link> <link="Light"><color=#66ccff>Deng</color></link>和<link="Open"><color=#66ccff>Kai</color></link> <link="Oxygen"><color=#66ccff>Yang</color></link>。
+
+B: 我怎么按了对应的指令按钮了却没用呢？
+
+A: 最后还得按一下<link="Enter"><color=#66ccff>ShuRu</color></link>。

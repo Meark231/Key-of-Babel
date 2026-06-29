@@ -1,72 +1,73 @@
-/*using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class PlayerMove : MonoBehaviour
 {
-    public float speed;
-    private Rigidbody rb;
+    public float maxSpeed = 8f;
+    public float acceleration = 35f;
+    public float deceleration = 45f;
 
-private float inputX,inputY;    
-private Vector3 offset;
-    // Start is called before the first frame update
-    void Start()
-    {
-        offset=Camera.main.transform.position-transform.position;
-        rb= GetComponent<Rigidbody>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        inputX=Input.GetAxisRaw("Horizontal");
-        inputY=Input.GetAxisRaw("Vertical");
-        Vector2 input=new Vector2(inputX,inputY).normalized;
-        rb.velocity=input*speed;
-        Camera.main.transform.position=transform.position+offset;
-    }
-}*/
-using UnityEngine;
-
-public class PlayerMove : MonoBehaviour
-{
-    public float speed = 8f;
-
-    private Rigidbody rb;
-    private Vector3 moveDir;
-    private Vector3 cameraOffset;
+    public float cameraSmoothTime = 0.12f;
     public bool ifsearch = false;
+
+    private Rigidbody rb;
+    private Vector3 inputDir;
+    private Vector3 currentVelocity;
+
+    private Vector3 cameraOffset;
+    private Vector3 cameraVelocity;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
 
+        rb.freezeRotation = true;
+        rb.useGravity = false;
+
         if (Camera.main != null)
         {
             cameraOffset = Camera.main.transform.position - transform.position;
         }
-
-        // 防止角色被物理撞歪
-        rb.freezeRotation = true;
-        rb.useGravity = false;
     }
 
     private void Update()
     {
-        float inputX = Input.GetAxisRaw("Horizontal"); // A=-1, D=1
-        float inputZ = Input.GetAxisRaw("Vertical");   // S=-1, W=1
-
-        // XZ 平面移动：D 是 X+，W 是 Z+
-        moveDir = new Vector3(inputX, 0f, inputZ).normalized;
-
-        if (Camera.main != null && ifsearch == false)
+        if (PlayerState.Instance.currentps == PlayerState.ps.Movable)
         {
-            Camera.main.transform.position = transform.position + cameraOffset;
+            float inputX = Input.GetAxisRaw("Horizontal");
+            float inputZ = Input.GetAxisRaw("Vertical");
+
+            inputDir = new Vector3(inputX, 0f, inputZ).normalized;
         }
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = moveDir * speed;
+        Vector3 targetVelocity = inputDir * maxSpeed;
+
+        float changeSpeed = inputDir.sqrMagnitude > 0.01f ? acceleration : deceleration;
+
+        currentVelocity = Vector3.MoveTowards(
+            currentVelocity,
+            targetVelocity,
+            changeSpeed * Time.fixedDeltaTime
+        );
+
+        rb.velocity = currentVelocity;
+    }
+
+    private void LateUpdate()
+    {
+        if (Camera.main != null && ifsearch == false)
+        {
+            Vector3 targetCameraPos = transform.position + cameraOffset;
+
+            Camera.main.transform.position = Vector3.SmoothDamp(
+                Camera.main.transform.position,
+                targetCameraPos,
+                ref cameraVelocity,
+                cameraSmoothTime
+            );
+        }
     }
 }

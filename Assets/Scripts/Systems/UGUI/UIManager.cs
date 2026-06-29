@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal;
+
 using UnityEngine;
 
 public class UIManager : Singleton<UIManager>
@@ -32,7 +32,10 @@ public class UIManager : Singleton<UIManager>
         {
             {UIConst.DialogPanel,"Prefabs/UGUI/DialogPanel"},
             {UIConst.Button1Panel,"Prefabs/UGUI/Button1Panel"},
-            {UIConst.NotePanel,"Prefabs/UGUI/NotePanel"}
+            {UIConst.Button2Panel,"Prefabs/UGUI/Button2Panel"},
+            {UIConst.Button3Panel,"Prefabs/UGUI/Button3Panel"},
+            {UIConst.NotePanel,"Prefabs/UGUI/NotePanel"},
+            {UIConst.CluePanel,"Prefabs/UGUI/CluePanel"}
         };
     }
     public BasePanel OpenPanel(string name)
@@ -65,6 +68,8 @@ public class UIConst
 {
     public const string DialogPanel = "DialogPanel";
     public const string Button1Panel = "Button1Panel";
+    public const string Button2Panel = "Button2Panel";
+    public const string Button3Panel = "Button3Panel";
     public const string NotePanel = "NotePanel";
-
+    public const string CluePanel = "CluePanel";
 }
